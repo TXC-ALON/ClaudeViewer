@@ -12,6 +12,8 @@
 
 #include <QApplication>
 #include <QGraphicsView>
+#include <QMouseEvent>
+#include <QWheelEvent>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QMenu>
@@ -23,6 +25,33 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
+/**
+ * @brief Custom GraphicsView with mouse wheel zoom support.
+ */
+class ZoomableGraphicsView : public QGraphicsView {
+public:
+    explicit ZoomableGraphicsView(QGraphicsScene* scene, QWidget* parent = nullptr)
+        : QGraphicsView(scene, parent) {
+        setRenderHint(QPainter::Antialiasing);
+        setDragMode(QGraphicsView::ScrollHandDrag);
+        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+    }
+
+protected:
+    void wheelEvent(QWheelEvent* event) override {
+        // Zoom in/out with mouse wheel
+        const double zoomFactor = 1.15;
+        if (event->angleDelta().y() > 0) {
+            scale(zoomFactor, zoomFactor);
+        } else {
+            scale(1.0 / zoomFactor, 1.0 / zoomFactor);
+        }
+        event->accept();
+    }
+};
 
 /**
  * @brief Main window for the schematic viewer.
@@ -77,14 +106,8 @@ private:
         // Create layout
         QVBoxLayout* layout = new QVBoxLayout(centralWidget);
 
-        // Create graphics view
-        QGraphicsView* view = new QGraphicsView(&scene_);
-        view->setRenderHint(QPainter::Antialiasing);
-        view->setDragMode(QGraphicsView::ScrollHandDrag);
-        view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-        view->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-        view->setResizeAnchor(QGraphicsView::AnchorUnderMouse);
-
+        // Create graphics view with zoom support
+        ZoomableGraphicsView* view = new ZoomableGraphicsView(&scene_, this);
         layout->addWidget(view);
 
         // Create menu bar

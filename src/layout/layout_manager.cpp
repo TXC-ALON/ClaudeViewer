@@ -8,6 +8,7 @@
 #include "layout/layout_manager.h"
 
 #include <cmath>
+#include <map>
 
 LayoutManager::LayoutManager(ObjectManager& objMgr)
     : objMgr_(objMgr) {}
@@ -83,24 +84,113 @@ void LayoutManager::autoLayout() {
     constexpr qreal INST_SPACING_X = 120.0;
     constexpr qreal INST_SPACING_Y = 100.0;
     constexpr qreal PIN_OFFSET = 15.0;
+    constexpr qreal TOP_INST_PADDING = 30.0;  // Padding inside TOP inst for children
 
     // Get all Insts
     auto insts = objMgr_.getAllInsts();
 
-    // Simple grid layout
+    // First pass: collect TOP insts and their children
+    std::vector<ObjectID> topInsts;
+    std::map<ObjectID, std::vector<ObjectID>> childrenMap;  // parentId -> childIds
+
+    for (const auto& inst : insts) {
+        ObjectID parentId = inst->getParentId();
+        if (inst->isTop()) {
+            topInsts.push_back(inst->getId());
+        } else {
+            childrenMap[parentId].push_back(inst->getId());
+        }
+    }
+
+    // Layout each TOP inst and its children
+    int topCol = 0;
+    constexpr int MAX_TOP_COLS = 3;
+
+    for (ObjectID topId : topInsts) {
+        // Start position for this TOP inst
+        qreal topX = topCol * 400.0 + 50.0;
+        qreal topY = 50.0;
+
+        // Layout children first inside a temporary area
+        auto children = childrenMap[topId];
+        if (!children.empty()) {
+            // Layout children in a grid inside the TOP inst area
+            int childCol = 0;
+            int childRow = 0;
+            constexpr int MAX_CHILD_COLS = 3;
+
+            for (ObjectID childId : children) {
+                qreal childX = topX + TOP_INST_PADDING + childCol * INST_SPACING_X;
+                qreal childY = topY + TOP_INST_PADDING + childRow * INST_SPACING_Y;
+
+                QRectF childBox(childX, childY, INST_WIDTH, INST_HEIGHT);
+                updateInstLayout(childId, childBox);
+                computeInstPinLayout(childId);
+
+                childCol++;
+                if (childCol >= MAX_CHILD_COLS) {
+                    childCol = 0;
+                    childRow++;
+                }
+            }
+
+            // Calculate bounding box to contain all children
+            QRectF childrenBounds;
+            for (ObjectID childId : children) {
+                auto* layout = getInstLayout(childId);
+                if (layout) {
+                    if (childrenBounds.isNull()) {
+                        childrenBounds = layout->getBoundingBox();
+                    } else {
+                        childrenBounds = childrenBounds.united(layout->getBoundingBox());
+                    }
+                }
+            }
+
+            // Expand to include padding and text space
+            qreal expandedWidth = childrenBounds.width() + TOP_INST_PADDING * 2;
+            qreal expandedHeight = childrenBounds.height() + TOP_INST_PADDING * 2 + 40;  // +40 for text
+
+            QRectF topBox(topX, topY, std::max(expandedWidth, INST_WIDTH), std::max(expandedHeight, INST_HEIGHT));
+            updateInstLayout(topId, topBox);
+        } else {
+            // No children, use default size
+            QRectF topBox(topX, topY, INST_WIDTH, INST_HEIGHT);
+            updateInstLayout(topId, topBox);
+        }
+
+        computeInstPinLayout(topId);
+
+        topCol++;
+        if (topCol >= MAX_TOP_COLS) {
+            topCol = 0;
+        }
+    }
+
+    // Handle standalone non-TOP insts (orphans) with simple grid layout
+    std::vector<ObjectID> orphanInsts;
+    for (const auto& inst : insts) {
+        if (!inst->isTop() && childrenMap[inst->getParentId()].empty()) {
+            // This inst's parent is not in our inst list or has no children placed
+            orphanInsts.push_back(inst->getId());
+        }
+    }
+
+    // Simple grid for any remaining insts
     int col = 0;
     int row = 0;
     constexpr int MAX_COLS = 5;
 
-    for (const auto& inst : insts) {
+    for (ObjectID orphanId : orphanInsts) {
+        // Check if already laid out as child
+        if (getInstLayout(orphanId)) continue;
+
         qreal x = col * INST_SPACING_X + 50.0;
-        qreal y = row * INST_SPACING_Y + 50.0;
+        qreal y = row * INST_SPACING_Y + 300.0;  // Place below TOP insts
 
         QRectF boundingBox(x, y, INST_WIDTH, INST_HEIGHT);
-        updateInstLayout(inst->getId(), boundingBox);
-
-        // Compute pin positions
-        computeInstPinLayout(inst->getId());
+        updateInstLayout(orphanId, boundingBox);
+        computeInstPinLayout(orphanId);
 
         col++;
         if (col >= MAX_COLS) {

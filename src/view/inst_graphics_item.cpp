@@ -9,6 +9,7 @@
 
 #include <QPainter>
 #include <QStyleOption>
+#include <QFontMetrics>
 
 InstGraphicsItem::InstGraphicsItem(std::shared_ptr<Inst> inst, InstLayout* layout)
     : inst_(inst), layout_(layout) {
@@ -40,7 +41,8 @@ QRectF InstGraphicsItem::boundingRect() const {
     if (!layout_) {
         return QRectF();
     }
-    return layout_->getBoundingBox().adjusted(-5, -20, 5, 20);
+    // Expand bounding rect to include text above and below (with more offset)
+    return layout_->getBoundingBox().adjusted(-10, -30, 10, 35);
 }
 
 void InstGraphicsItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
@@ -75,20 +77,26 @@ void InstGraphicsItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* 
     // Draw rectangle
     painter->drawRect(bbox);
 
-    // Draw name above the rectangle
+    // Draw name ABOVE the rectangle (outside)
     QString name = QString::fromStdString(inst_->getName());
     if (!name.isEmpty()) {
         painter->setFont(nameFont_);
-        QRectF nameRect = bbox.adjusted(0, -18, 0, 0);
-        painter->drawText(nameRect, Qt::AlignCenter, name);
+        QFontMetrics fm(nameFont_);
+        int textWidth = fm.horizontalAdvance(name);
+        qreal nameX = bbox.center().x() - textWidth / 2.0;
+        qreal nameY = bbox.top() - 15;  // More offset above
+        painter->drawText(static_cast<int>(nameX), static_cast<int>(nameY), name);
     }
 
-    // Draw module name below the rectangle
+    // Draw module name BELOW the rectangle (outside)
     QString moduleName = QString::fromStdString(inst_->getModuleName());
     if (!moduleName.isEmpty()) {
         painter->setFont(moduleFont_);
-        QRectF moduleRect = bbox.adjusted(0, 0, 0, 18);
-        painter->drawText(moduleRect, Qt::AlignCenter, moduleName);
+        QFontMetrics fm(moduleFont_);
+        int textWidth = fm.horizontalAdvance(moduleName);
+        qreal moduleX = bbox.center().x() - textWidth / 2.0;
+        qreal moduleY = bbox.bottom() + 20;  // More offset below
+        painter->drawText(static_cast<int>(moduleX), static_cast<int>(moduleY), moduleName);
     }
 }
 
