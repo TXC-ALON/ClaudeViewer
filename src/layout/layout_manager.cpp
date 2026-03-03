@@ -90,11 +90,12 @@ struct InstBox {
 void LayoutManager::autoLayout() {
     constexpr qreal INST_WIDTH = 80.0;
     constexpr qreal INST_HEIGHT = 60.0;
-    constexpr qreal MIN_SPACING_X = 100.0;  // Minimum horizontal spacing
-    constexpr qreal MIN_SPACING_Y = 80.0;   // Minimum vertical spacing
-    constexpr qreal TEXT_MARGIN = 5.0;       // Margin between text and box
+    constexpr qreal MIN_SPACING_X = 120.0;  // Minimum horizontal spacing
+    constexpr qreal MIN_SPACING_Y = 100.0;   // Minimum vertical spacing
+    constexpr qreal TEXT_MARGIN = 2.0;       // Margin between text and box
     constexpr qreal NAME_TEXT_HEIGHT = 15.0;  // Estimated name text height
     constexpr qreal MODULE_TEXT_HEIGHT = 12.0; // Estimated module text height
+    constexpr qreal PIN_EXT_LENGTH = 20.0;    // Pin extends outside inst
     constexpr qreal TOP_PADDING = 40.0;      // Padding inside TOP inst for children
 
     // Get all Insts
@@ -146,15 +147,19 @@ void LayoutManager::autoLayout() {
                 }
             }
 
-            // Calculate bounding box to contain all children
+            // Calculate bounding box to contain all children (including pins and text)
             QRectF childrenBounds;
             for (ObjectID childId : children) {
                 auto* layout = getInstLayout(childId);
                 if (layout) {
+                    QRectF childFullBox = layout->getBoundingBox();
+                    // Expand to include pins on left/right and text on top/bottom
+                    childFullBox.adjust(-PIN_EXT_LENGTH, -NAME_TEXT_HEIGHT - TEXT_MARGIN,
+                                       PIN_EXT_LENGTH, MODULE_TEXT_HEIGHT + TEXT_MARGIN);
                     if (childrenBounds.isNull()) {
-                        childrenBounds = layout->getBoundingBox();
+                        childrenBounds = childFullBox;
                     } else {
-                        childrenBounds = childrenBounds.united(layout->getBoundingBox());
+                        childrenBounds = childrenBounds.united(childFullBox);
                     }
                 }
             }
@@ -196,10 +201,11 @@ void LayoutManager::autoLayout() {
         qreal textWidth = std::max({INST_WIDTH, nameWidth, moduleWidth});
 
         ib.box = QRectF(0, 0, INST_WIDTH, INST_HEIGHT);
+        // Full box includes: pin extension (left/right), name (top), module (bottom)
         ib.fullBox = QRectF(
-            - (textWidth - INST_WIDTH) / 2,
+            -PIN_EXT_LENGTH - (textWidth - INST_WIDTH) / 2,
             -NAME_TEXT_HEIGHT - TEXT_MARGIN,
-            textWidth,
+            textWidth + PIN_EXT_LENGTH * 2,
             INST_HEIGHT + NAME_TEXT_HEIGHT + MODULE_TEXT_HEIGHT + TEXT_MARGIN * 2
         );
 
