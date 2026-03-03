@@ -89,13 +89,13 @@ void SchematicScene::updateInst(ObjectID instId) {
         QRectF bbox = layout->getBoundingBox();
         auto nameIt = nameLabelItems_.find(instId);
         if (nameIt != nameLabelItems_.end()) {
-            // Name inside the box at top center
-            nameIt->second->updatePositionCentered(bbox.center().x(), bbox.top() + 5);
+            // Name above the box (outside)
+            nameIt->second->updatePositionCentered(bbox.center().x(), bbox.top() - 15);
         }
         auto moduleIt = moduleLabelItems_.find(instId);
         if (moduleIt != moduleLabelItems_.end()) {
             // Module name below the box (outside)
-            moduleIt->second->updatePositionCentered(bbox.center().x(), bbox.bottom() + 1);
+            moduleIt->second->updatePositionCentered(bbox.center().x(), bbox.bottom() + 15);
         }
     }
 }
