@@ -14,6 +14,7 @@ TextItem::TextItem(const QString& text, QGraphicsItem* parent)
     setFlag(QGraphicsItem::ItemIsSelectable, false);
     setFlag(QGraphicsItem::ItemIsMovable, false);
     setTextInteractionFlags(Qt::NoTextInteraction);
+    setZValue(25);  // Above pins (20)
 }
 
 void TextItem::setText(const QString& text) {
