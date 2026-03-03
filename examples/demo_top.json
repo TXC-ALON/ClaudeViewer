@@ -1,0 +1,8 @@
+{
+  "action": "load",
+  "type": "inst",
+  "id": "1",
+  "name": "top",
+  "module_name": "top_module",
+  "parent_id": "1"
+}

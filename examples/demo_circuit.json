@@ -1,0 +1,31 @@
+{"action": "load", "type": "inst", "id": "1", "name": "top", "module_name": "top_module", "parent_id": "1"}
+{"action": "load", "type": "inst", "id": "2", "name": "buf1", "module_name": "buf", "parent_id": "1"}
+{"action": "load", "type": "inst", "id": "3", "name": "buf2", "module_name": "buf", "parent_id": "1"}
+{"action": "load", "type": "inst", "id": "4", "name": "and2", "module_name": "and2", "parent_id": "1"}
+{"action": "load", "type": "inst", "id": "5", "name": "inv1", "module_name": "inv", "parent_id": "1"}
+{"action": "load", "type": "pin", "id": "101", "name": "a", "parent_id": "1", "direction": "input"}
+{"action": "load", "type": "pin", "id": "102", "name": "b", "parent_id": "1", "direction": "input"}
+{"action": "load", "type": "pin", "id": "103", "name": "c", "parent_id": "1", "direction": "input"}
+{"action": "load", "type": "pin", "id": "104", "name": "y", "parent_id": "1", "direction": "output"}
+{"action": "load", "type": "pin", "id": "201", "name": "a", "parent_id": "2", "direction": "input"}
+{"action": "load", "type": "pin", "id": "202", "name": "y", "parent_id": "2", "direction": "output"}
+{"action": "load", "type": "pin", "id": "301", "name": "a", "parent_id": "3", "direction": "input"}
+{"action": "load", "type": "pin", "id": "302", "name": "y", "parent_id": "3", "direction": "output"}
+{"action": "load", "type": "pin", "id": "401", "name": "a", "parent_id": "4", "direction": "input"}
+{"action": "load", "type": "pin", "id": "402", "name": "b", "parent_id": "4", "direction": "input"}
+{"action": "load", "type": "pin", "id": "403", "name": "y", "parent_id": "4", "direction": "output"}
+{"action": "load", "type": "pin", "id": "501", "name": "a", "parent_id": "5", "direction": "input"}
+{"action": "load", "type": "pin", "id": "502", "name": "y", "parent_id": "5", "direction": "output"}
+{"action": "attribute", "type": "pin", "id": "101", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "102", "connectionnum": 2}
+{"action": "attribute", "type": "pin", "id": "103", "connectionnum": 0}
+{"action": "attribute", "type": "pin", "id": "104", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "201", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "202", "connectionnum": 2}
+{"action": "attribute", "type": "pin", "id": "301", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "302", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "401", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "402", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "403", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "501", "connectionnum": 1}
+{"action": "attribute", "type": "pin", "id": "502", "connectionnum": 1}
