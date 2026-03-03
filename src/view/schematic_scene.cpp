@@ -6,7 +6,7 @@
  */
 
 #include "view/schematic_scene.h"
-#include "view/inst_label_item.h"
+#include "view/text_item.h"
 
 #include <QFont>
 
@@ -54,16 +54,16 @@ void SchematicScene::updateInst(ObjectID instId) {
     if (!name.isEmpty()) {
         auto it = nameLabelItems_.find(instId);
         if (it == nameLabelItems_.end()) {
-            auto label = std::make_unique<InstLabelItem>(name);
+            auto label = std::make_unique<TextItem>(name);
             QFont font("Sans-serif");
             font.setPointSize(9);
             font.setBold(true);
-            label->setLabelFont(font);
+            label->setTextFont(font);
             label->setDefaultTextColor(Qt::black);
             addItem(label.get());
             nameLabelItems_[instId] = std::move(label);
         } else {
-            it->second->setLabelText(name);
+            it->second->setText(name);
         }
     }
 
@@ -72,15 +72,15 @@ void SchematicScene::updateInst(ObjectID instId) {
     if (!moduleName.isEmpty()) {
         auto it = moduleLabelItems_.find(instId);
         if (it == moduleLabelItems_.end()) {
-            auto label = std::make_unique<InstLabelItem>(moduleName);
+            auto label = std::make_unique<TextItem>(moduleName);
             QFont font("Sans-serif");
             font.setPointSize(8);
-            label->setLabelFont(font);
+            label->setTextFont(font);
             label->setDefaultTextColor(Qt::black);
             addItem(label.get());
             moduleLabelItems_[instId] = std::move(label);
         } else {
-            it->second->setLabelText(moduleName);
+            it->second->setText(moduleName);
         }
     }
 
@@ -89,11 +89,13 @@ void SchematicScene::updateInst(ObjectID instId) {
         QRectF bbox = layout->getBoundingBox();
         auto nameIt = nameLabelItems_.find(instId);
         if (nameIt != nameLabelItems_.end()) {
-            nameIt->second->updatePosition(bbox.center().x(), bbox.top(), bbox.bottom(), true);
+            // Name above the box
+            nameIt->second->updatePositionCentered(bbox.center().x(), bbox.top() - 15);
         }
         auto moduleIt = moduleLabelItems_.find(instId);
         if (moduleIt != moduleLabelItems_.end()) {
-            moduleIt->second->updatePosition(bbox.center().x(), bbox.top(), bbox.bottom(), false);
+            // Module name below the box
+            moduleIt->second->updatePositionCentered(bbox.center().x(), bbox.bottom() + 12);
         }
     }
 }
