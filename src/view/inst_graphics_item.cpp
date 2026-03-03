@@ -34,7 +34,7 @@ InstGraphicsItem::InstGraphicsItem(std::shared_ptr<Inst> inst, InstLayout* layou
     setFlag(QGraphicsItem::ItemIsMovable, false);  // Static layout
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
 
-    setZValue(20);  // Inst layer
+    setZValue(10);  // Inst layer (below pins)
 }
 
 QRectF InstGraphicsItem::boundingRect() const {

@@ -34,7 +34,7 @@ PinGraphicsItem::PinGraphicsItem(std::shared_ptr<Pin> pin, PinLayout* layout, co
     setFlag(QGraphicsItem::ItemIsMovable, false);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
 
-    setZValue(10);  // Pin layer (below Inst)
+    setZValue(20);  // Pin layer (above Inst)
 }
 
 QRectF PinGraphicsItem::boundingRect() const {
