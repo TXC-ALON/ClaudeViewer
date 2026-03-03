@@ -32,6 +32,7 @@ set(SOURCES
     src/layout/layout_manager.cpp
     # View layer
     src/view/inst_graphics_item.cpp
+    src/view/inst_label_item.cpp
     src/view/pin_graphics_item.cpp
     src/view/schematic_scene.cpp
 )
@@ -52,6 +53,7 @@ set(HEADERS
     include/layout/layout_manager.h
     # View layer
     include/view/inst_graphics_item.h
+    include/view/inst_label_item.h
     include/view/pin_graphics_item.h
     include/view/schematic_scene.h
 )

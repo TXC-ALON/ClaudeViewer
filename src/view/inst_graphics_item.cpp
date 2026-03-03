@@ -41,8 +41,8 @@ QRectF InstGraphicsItem::boundingRect() const {
     if (!layout_) {
         return QRectF();
     }
-    // Expand bounding rect to include text above and below (with more offset)
-    return layout_->getBoundingBox().adjusted(-10, -30, 10, 35);
+    // Return the box only (text is handled by separate label items)
+    return layout_->getBoundingBox();
 }
 
 void InstGraphicsItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
@@ -74,30 +74,8 @@ void InstGraphicsItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* 
     painter->setPen(pen_);
     painter->setBrush(brush_);
 
-    // Draw rectangle
+    // Draw rectangle only (text is handled by separate label items)
     painter->drawRect(bbox);
-
-    // Draw name ABOVE the rectangle (outside)
-    QString name = QString::fromStdString(inst_->getName());
-    if (!name.isEmpty()) {
-        painter->setFont(nameFont_);
-        QFontMetrics fm(nameFont_);
-        int textWidth = fm.horizontalAdvance(name);
-        qreal nameX = bbox.center().x() - textWidth / 2.0;
-        qreal nameY = bbox.top() - 15;  // More offset above
-        painter->drawText(static_cast<int>(nameX), static_cast<int>(nameY), name);
-    }
-
-    // Draw module name BELOW the rectangle (outside)
-    QString moduleName = QString::fromStdString(inst_->getModuleName());
-    if (!moduleName.isEmpty()) {
-        painter->setFont(moduleFont_);
-        QFontMetrics fm(moduleFont_);
-        int textWidth = fm.horizontalAdvance(moduleName);
-        qreal moduleX = bbox.center().x() - textWidth / 2.0;
-        qreal moduleY = bbox.bottom() + 20;  // More offset below
-        painter->drawText(static_cast<int>(moduleX), static_cast<int>(moduleY), moduleName);
-    }
 }
 
 void InstGraphicsItem::setLayout(InstLayout* layout) {

@@ -6,6 +6,9 @@
  */
 
 #include "view/schematic_scene.h"
+#include "view/inst_label_item.h"
+
+#include <QFont>
 
 SchematicScene::SchematicScene(ObjectManager& objMgr, LayoutManager& layoutMgr)
     : objMgr_(objMgr), layoutMgr_(layoutMgr) {
@@ -39,10 +42,59 @@ void SchematicScene::updateInst(ObjectID instId) {
     auto inst = *optInst;
     auto layout = layoutMgr_.getInstLayout(instId);
 
+    // Update main inst item
     auto* item = getOrCreateInstItem(instId);
     item->setInst(inst);
     if (layout) {
         item->setLayout(layout);
+    }
+
+    // Update or create name label
+    QString name = QString::fromStdString(inst->getName());
+    if (!name.isEmpty()) {
+        auto it = nameLabelItems_.find(instId);
+        if (it == nameLabelItems_.end()) {
+            auto label = std::make_unique<InstLabelItem>(name);
+            QFont font("Sans-serif");
+            font.setPointSize(9);
+            font.setBold(true);
+            label->setLabelFont(font);
+            label->setDefaultTextColor(Qt::black);
+            addItem(label.get());
+            nameLabelItems_[instId] = std::move(label);
+        } else {
+            it->second->setLabelText(name);
+        }
+    }
+
+    // Update or create module label
+    QString moduleName = QString::fromStdString(inst->getModuleName());
+    if (!moduleName.isEmpty()) {
+        auto it = moduleLabelItems_.find(instId);
+        if (it == moduleLabelItems_.end()) {
+            auto label = std::make_unique<InstLabelItem>(moduleName);
+            QFont font("Sans-serif");
+            font.setPointSize(8);
+            label->setLabelFont(font);
+            label->setDefaultTextColor(Qt::black);
+            addItem(label.get());
+            moduleLabelItems_[instId] = std::move(label);
+        } else {
+            it->second->setLabelText(moduleName);
+        }
+    }
+
+    // Update label positions based on layout
+    if (layout) {
+        QRectF bbox = layout->getBoundingBox();
+        auto nameIt = nameLabelItems_.find(instId);
+        if (nameIt != nameLabelItems_.end()) {
+            nameIt->second->updatePosition(bbox.center().x(), bbox.top(), bbox.bottom(), true);
+        }
+        auto moduleIt = moduleLabelItems_.find(instId);
+        if (moduleIt != moduleLabelItems_.end()) {
+            moduleIt->second->updatePosition(bbox.center().x(), bbox.top(), bbox.bottom(), false);
+        }
     }
 }
 
@@ -78,6 +130,18 @@ void SchematicScene::removeInst(ObjectID instId) {
         removeItem(it->second.get());
         instItems_.erase(it);
     }
+
+    // Also remove label items
+    auto nameIt = nameLabelItems_.find(instId);
+    if (nameIt != nameLabelItems_.end()) {
+        removeItem(nameIt->second.get());
+        nameLabelItems_.erase(nameIt);
+    }
+    auto moduleIt = moduleLabelItems_.find(instId);
+    if (moduleIt != moduleLabelItems_.end()) {
+        removeItem(moduleIt->second.get());
+        moduleLabelItems_.erase(moduleIt);
+    }
 }
 
 void SchematicScene::removePin(ObjectID pinId) {
@@ -96,9 +160,17 @@ void SchematicScene::clearAll() {
     for (auto& [id, item] : pinItems_) {
         removeItem(item.get());
     }
+    for (auto& [id, item] : nameLabelItems_) {
+        removeItem(item.get());
+    }
+    for (auto& [id, item] : moduleLabelItems_) {
+        removeItem(item.get());
+    }
 
     instItems_.clear();
     pinItems_.clear();
+    nameLabelItems_.clear();
+    moduleLabelItems_.clear();
 }
 
 void SchematicScene::runAutoLayout() {

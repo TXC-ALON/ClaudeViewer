@@ -12,6 +12,7 @@
 
 #include <QPointF>
 #include <QRectF>
+#include <QSizeF>
 #include <vector>
 
 /**
@@ -81,9 +82,71 @@ public:
      */
     QPointF getPosition() const { return position_; }
 
+    /**
+     * @brief Set name text size.
+     * @param size Name text size.
+     */
+    void setNameTextSize(const QSizeF& size) { nameTextSize_ = size; }
+
+    /**
+     * @brief Get name text size.
+     * @return Name text size.
+     */
+    QSizeF getNameTextSize() const { return nameTextSize_; }
+
+    /**
+     * @brief Set module text size.
+     * @param size Module text size.
+     */
+    void setModuleTextSize(const QSizeF& size) { moduleTextSize_ = size; }
+
+    /**
+     * @brief Get module text size.
+     * @return Module text size.
+     */
+    QSizeF getModuleTextSize() const { return moduleTextSize_; }
+
+    /**
+     * @brief Get full bounding box including text.
+     * @return Full bounding rectangle including name above and module below.
+     */
+    QRectF getFullBoundingBox() const {
+        qreal top = boundingBox_.top() - nameTextSize_.height() - TEXT_MARGIN_;
+        qreal bottom = boundingBox_.bottom() + moduleTextSize_.height() + TEXT_MARGIN_;
+        qreal left = boundingBox_.left();
+        qreal right = boundingBox_.right();
+        // Also consider text width
+        if (nameTextSize_.width() > boundingBox_.width()) {
+            qreal diff = nameTextSize_.width() - boundingBox_.width();
+            left -= diff / 2;
+            right += diff / 2;
+        }
+        if (moduleTextSize_.width() > boundingBox_.width()) {
+            qreal diff = moduleTextSize_.width() - boundingBox_.width();
+            left -= diff / 2;
+            right += diff / 2;
+        }
+        return QRectF(left, top, right - left, bottom - top);
+    }
+
+    /**
+     * @brief Set text margin.
+     * @param margin Margin between text and box.
+     */
+    void setTextMargin(qreal margin) { TEXT_MARGIN_ = margin; }
+
+    /**
+     * @brief Get text margin.
+     * @return Text margin.
+     */
+    qreal getTextMargin() const { return TEXT_MARGIN_; }
+
 private:
     QRectF boundingBox_;  ///< Bounding box (x, y, width, height).
     QPointF position_;    ///< Center position.
+    QSizeF nameTextSize_;    ///< Name text size.
+    QSizeF moduleTextSize_;  ///< Module name text size.
+    qreal TEXT_MARGIN_ = 5.0;  ///< Margin between text and box.
 };
 
 /**

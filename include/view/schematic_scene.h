@@ -11,6 +11,7 @@
 #include "layout/layout_manager.h"
 #include "model/object_manager.h"
 #include "view/inst_graphics_item.h"
+#include "view/inst_label_item.h"
 #include "view/pin_graphics_item.h"
 
 #include <QGraphicsScene>
@@ -93,6 +94,10 @@ private:
 
     std::unordered_map<ObjectID, std::unique_ptr<InstGraphicsItem>> instItems_;
     std::unordered_map<ObjectID, std::unique_ptr<PinGraphicsItem>> pinItems_;
+
+    // Label items for inst name and module name
+    std::unordered_map<ObjectID, std::unique_ptr<InstLabelItem>> nameLabelItems_;
+    std::unordered_map<ObjectID, std::unique_ptr<InstLabelItem>> moduleLabelItems_;
 };
 
 #endif  // SCHEMATIC_VIEWER_VIEW_SCHEMATIC_SCENE_H
