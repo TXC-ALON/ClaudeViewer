@@ -9,9 +9,10 @@
 #include "view/text_item.h"
 
 #include <QFont>
-
+#include <QDebug>
 SchematicScene::SchematicScene(ObjectManager& objMgr, LayoutManager& layoutMgr)
-    : objMgr_(objMgr), layoutMgr_(layoutMgr) {
+    : objMgr_(objMgr),
+      layoutMgr_(layoutMgr) {
     setBackgroundBrush(QBrush(QColor(240, 240, 240)));
 }
 
@@ -90,12 +91,13 @@ void SchematicScene::updateInst(ObjectID instId) {
         auto nameIt = nameLabelItems_.find(instId);
         if (nameIt != nameLabelItems_.end()) {
             // Name above the box (outside)
-            nameIt->second->updatePositionCentered(bbox.center().x(), bbox.top() - 15);
+            QRectF textbb = nameIt->second->boundingRect();
+            nameIt->second->updatePositionCentered(bbox.center().x(), bbox.top() - textbb.height());
         }
         auto moduleIt = moduleLabelItems_.find(instId);
         if (moduleIt != moduleLabelItems_.end()) {
             // Module name below the box (outside)
-            moduleIt->second->updatePositionCentered(bbox.center().x(), bbox.bottom() + 15);
+            moduleIt->second->updatePositionCentered(bbox.center().x(), bbox.bottom());
         }
     }
 }

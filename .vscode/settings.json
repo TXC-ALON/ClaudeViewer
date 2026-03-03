@@ -56,5 +56,8 @@
     "claudeCode.allowDangerouslySkipPermissions": true,
     "terminal.integrated.env.windows": {
         "CLAUDE_SKIP_PERMISSIONS": "1"
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
     }
 }
