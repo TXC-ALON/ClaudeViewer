@@ -1,0 +1,60 @@
+{
+    "terminal.integrated.scrollback": 100000,
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.fontFamily": "JetBrains Mono NL,Consolas",
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.stickyScroll.enabled": true,
+    "terminal.integrated.rightClickBehavior": "copyPaste",
+
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.wordWrap": "bounded",
+    "editor.wordWrapColumn": 120,
+    "editor.rulers": [120],
+    "editor.fontFamily": "JetBrains Mono NL,Consolas",
+    "editor.mouseWheelZoom": true,
+    "editor.smoothScrolling": true,
+    "editor.cursorBlinking": "expand",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "files.autoSaveDelay": 5000,
+    "files.trimTrailingWhitespace": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "workbench.editor.wrapTabs": true,
+    "workbench.list.smoothScrolling": true,
+    "search.useIgnoreFiles": true,
+    "git.ignoreLimitWarning": true,
+
+    "cmake.configureOnOpen": false,
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.buildDirectory": "${workspaceFolder}/build_ninja",
+    "cmake.generator": "Ninja",
+    "cmake.configureSettings": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_MAKE_PROGRAM": "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+    },
+    "cmake.options.statusBarVisibility": "compact",
+
+    "C_Cpp.autocomplete": "disabled",
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+
+    "clang-format.executable": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang-format.exe",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build_ninja",
+        "--background-index",
+        "--header-insertion=never",
+        "--fallback-style=none",
+        "--clang-tidy",
+        "--all-scopes-completion",
+        "--completion-style=detailed"
+    ],
+    "claudeCode.claudeProcessWrapper": "",
+    "claudeCode.selectedModel": "MiniMax-M2.5",
+    "claudeCode.allowDangerouslySkipPermissions": true,
+    "terminal.integrated.env.windows": {
+        "CLAUDE_SKIP_PERMISSIONS": "1"
+    }
+}
